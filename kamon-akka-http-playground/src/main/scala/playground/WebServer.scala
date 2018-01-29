@@ -42,21 +42,26 @@ object WebServer extends App {
   val routes = { // logRequestResult("akka-http-with-kamon") {
     get {
       path("ok") {
-        complete {
-          "ok"
+        extractRequestContext { ctx =>
+          println("Context: " + ctx)
+          complete {
+            println("The Stack:" + (new Throwable).getStackTraceString)
+
+            "ok"
+          }
         }
       } ~
-        path("go-to-outside") {
-          complete {
-            Http().singleRequest(HttpRequest(uri = s"http://${config.getString("services.ip-api.host")}:${config.getString("services.ip-api.port")}/"))
-          }
-        } ~
-        path("internal-error") {
-          complete(HttpResponse(InternalServerError))
-        } ~
-        path("fail-with-exception") {
-          throw new RuntimeException("Failed!")
+      path("go-to-outside") {
+        complete {
+          Http().singleRequest(HttpRequest(uri = s"http://${config.getString("services.ip-api.host")}:${config.getString("services.ip-api.port")}/"))
         }
+      } ~
+      path("internal-error") {
+        complete(HttpResponse(InternalServerError))
+      } ~
+      path("fail-with-exception") {
+        throw new RuntimeException("Failed!")
+      }
     }
   }
 
