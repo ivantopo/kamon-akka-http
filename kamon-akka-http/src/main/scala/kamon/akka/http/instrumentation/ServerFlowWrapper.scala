@@ -152,9 +152,9 @@ object ServerFlowWrapper {
     )
 
   private def extractContext(request: HttpRequest) = Kamon.contextCodec().HttpHeaders.decode(new TextMap {
-    private val headersKeyValueMap = request.headers.map(h => h.name -> h.value()).toMap
+    private val headersKeyValueMap = request.headers.map(h => h.name.toLowerCase -> h.value()).toMap
     override def values: Iterator[(String, String)] = headersKeyValueMap.iterator
-    override def get(key: String): Option[String] = headersKeyValueMap.get(key)
+    override def get(key: String): Option[String] = headersKeyValueMap.get(key.toLowerCase())
     override def put(key: String, value: String): Unit = {}
   })
 }
